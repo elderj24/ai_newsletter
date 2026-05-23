@@ -1,0 +1,66 @@
+name: Weekly AI Newsletter Pipeline
+
+on:
+  schedule:
+    # Trigger weekly on Sundays at 13:00 UTC (8:00 AM US Central Time)
+    - cron: '0 13 * * 0'
+  workflow_dispatch:
+    # Allows manual triggering of the pipeline from the GitHub Actions UI
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Essential permission to push SQLite state database updates back to the repo
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache Virtual Environment
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Create Virtual Environment and Install Dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Newsletter Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: |
+          source .venv/bin/activate
+          python src/main.py
+
+      - name: Commit and Push Database State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if SQLite state file exists and has changes
+          if [ -f newsletter_state.db ]; then
+            git add newsletter_state.db
+            if git diff --cached --quiet; then
+              echo "No database state changes detected."
+            else
+              git commit -m "chore: update SQLite state database with sent articles [skip ci]"
+              git push
+            fi
+          else
+            echo "State database file not found. Skipping commit."
+          fi

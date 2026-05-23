@@ -5,7 +5,7 @@ This document tracks project state, conventions, architectural decisions, and ta
 ## Project Metadata
 * **Owner**: JD Elder (Tilia LLC)
 * **Goal**: Automatic ingestion, LLM synthesis, and email delivery of weekly AI news from specific providers.
-* **Status**: Initialized. Local git configured with remote. Standard documentation (`README.md`, `GEMINI.md`) established. No codebase files written yet.
+* **Status**: Completed. All codebase modules written, unit-tested (8/8 passing tests), and GitHub Actions workflow configured.
 
 ---
 
@@ -56,25 +56,25 @@ This document tracks project state, conventions, architectural decisions, and ta
 
 ## To-Do List & Next Steps
 
-1. `[ ]` **Repository Setup**
+1. `[x]` **Repository Setup**
    - Create `.gitignore` to ignore `.venv`, `.env`, SQLite databases (`*.db`), and cache files.
    - Initial commit of project configuration and documentation files (pending approval).
-2. `[ ]` **Virtual Environment & Dependencies**
+2. `[x]` **Virtual Environment & Dependencies**
    - Create `.venv` locally.
    - Create `requirements.txt` with `google-genai`, `exa-py`, `resend`, `python-dotenv`, `pytest`, `pytest-asyncio`, and `httpx`.
-3. `[ ]` **Database & State Implementation**
+3. `[x]` **Database & State Implementation**
    - Build `src/database.py` to initialize SQLite and manage deduplication.
    - Implement unit tests in `tests/test_database.py`.
-4. `[ ]` **Ingestion Module**
+4. `[x]` **Ingestion Module**
    - Build `src/ingestion.py` using Exa API to query target domains.
    - Implement unit tests in `tests/test_ingestion.py`.
-5. `[ ]` **Synthesis Module**
+5. `[x]` **Synthesis Module**
    - Build `src/synthesis.py` integrating the Gemini API.
    - Write targeted prompts for summarizing and synthesizing company updates.
    - Implement unit tests in `tests/test_synthesis.py`.
-6. `[ ]` **Delivery Module**
+6. `[x]` **Delivery Module**
    - Build `src/delivery.py` integrating the Resend API to send HTML digests.
    - Implement unit tests in `tests/test_delivery.py`.
-7. `[ ]` **Pipeline Main Entry & GitHub Actions**
+7. `[x]` **Pipeline Main Entry & GitHub Actions**
    - Assemble modules in `src/main.py`.
    - Setup `.github/workflows/weekly_newsletter.yml` to trigger the pipeline weekly.
