@@ -37,7 +37,6 @@ def fetch_weekly_updates(db_path: str = "newsletter_state.db", days_back: int = 
             query="recent corporate press releases, technical announcements, product updates, and blog posts",
             include_domains=target_domains,
             start_published_date=start_date_str,
-            use_autoprompt=True,
             num_results=15,
             contents={
                 "text": {

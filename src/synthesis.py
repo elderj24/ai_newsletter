@@ -62,7 +62,7 @@ def synthesize_articles(articles: list[dict]) -> str:
     
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-pro",
+            model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
