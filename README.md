@@ -59,7 +59,7 @@ RECIPIENT_EMAIL=your_email@example.com
 
 ## Running the Pipeline
 ```bash
-python src/main.py
+python -m src.main
 ```
 
 ## Running Tests

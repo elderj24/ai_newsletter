@@ -45,7 +45,7 @@ jobs:
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: |
           source .venv/bin/activate
-          python src/main.py
+          python -m src.main
 
       - name: Commit and Push Database State
         run: |

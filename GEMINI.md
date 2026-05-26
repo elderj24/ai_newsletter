@@ -21,6 +21,7 @@ This document tracks project state, conventions, architectural decisions, and ta
 
 ## Conventions & Rules
 * **Virtual Environment**: Always run within a Python virtual environment (`.venv`). Do not install packages globally.
+* **Execution**: Run the pipeline as a Python package module (`python -m src.main`) rather than executing `python src/main.py` directly. This guarantees the root directory is automatically included in `sys.path`, avoiding package resolution errors (`ModuleNotFoundError: No module named 'src'`).
 * **Testing**: Write unit tests using `pytest` for all ingestion, synthesis, database state management, and email formatting functions.
 * **Coding Style**: Asynchronous code (`async/await`) where appropriate, prioritizing clean, self-documenting code over clever hacks.
 * **Error Handling**: Build defensive, resilient code. Do not write happy-path-only logic. Scraping or API failures must be gracefully caught, logged, and skipped/retried without crashing the entire pipeline.
