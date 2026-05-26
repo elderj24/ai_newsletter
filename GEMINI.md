@@ -3,16 +3,16 @@
 This document tracks project state, conventions, architectural decisions, and tasks for the AI Newsletter project.
 
 ## Project Metadata
-* **Owner**: JD Elder (Tilia LLC)
+* **Owner**: JD Elder (Personal Use)
 * **Goal**: Automatic ingestion, LLM synthesis, and email delivery of weekly AI news from specific providers.
-* **Status**: Fully Operational & Live-Verified. All modules written, unit tests passing (8/8), and live pipeline successfully run locally. Ready for GitHub Actions production scheduler.
+* **Status**: Fully Operational & Live-Verified. Personal branding ("Weekly AI Digest") applied, "Strategic & Investment Takeaways" section removed, NVIDIA tracking added, and upgraded to Gemini 3.1 Flash-Lite. All modules written, unit tests passing (8/8), and live pipeline successfully run locally. Ready for GitHub Actions production scheduler.
 
 ---
 
 ## Architectural Decisions
 1. **Language & Tooling**: Python was selected for its robust data parsing libraries, excellent integration with the new Google `google-genai` SDK, and easy testability via `pytest`.
 2. **Ingestion via Exa.ai**: Exa neural search is used to fetch recent URLs along with pre-cleaned, scrape-ready markdown. The ingestion module was updated to remove `use_autoprompt` which was deprecated in late 2025.
-3. **Synthesis via Gemini API**: Upgraded to **Gemini 2.5 Flash** for strategic synthesis of large text batches, providing free-tier compatibility, state-of-the-art capability, and 2026 active support.
+3. **Synthesis via Gemini API**: Upgraded to **Gemini 3.1 Flash-Lite** for efficient synthesis of large text batches, providing free-tier compatibility, state-of-the-art efficiency, and 2026 active support.
 4. **State Storage (SQLite)**: A small, single-table SQLite database will track previously sent URLs (`url`, `title`, `published_date`, `sent_at`) to ensure we do not email duplicate articles week-over-week.
 5. **Delivery via Resend**: Resend provides a clean developer API and modern Python client. It renders HTML emails beautifully and provides a robust free tier.
 6. **Orchestration**: A weekly GitHub Actions cron job will run the pipeline, keeping the architecture entirely serverless and free to host.

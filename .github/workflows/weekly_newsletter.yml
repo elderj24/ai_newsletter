@@ -57,7 +57,7 @@ jobs:
           
           # Check if SQLite state file exists and has changes
           if [ -f newsletter_state.db ]; then
-            git add newsletter_state.db
+            git add -f newsletter_state.db
             if git diff --cached --quiet; then
               echo "No database state changes detected."
             else

@@ -88,7 +88,7 @@ def convert_markdown_to_html(markdown_content: str) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tilia AI Digest</title>
+  <title>Weekly AI Digest</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 20px 0;">
@@ -99,7 +99,7 @@ def convert_markdown_to_html(markdown_content: str) -> str:
           <tr>
             <td style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); padding: 35px 40px; text-align: left;">
               <span style="font-family: 'Outfit', 'Inter', -apple-system, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; color: #93c5fd; text-transform: uppercase;">Weekly Insight Pipeline</span>
-              <h1 style="font-family: 'Outfit', 'Inter', -apple-system, sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin: 5px 0 0 0; letter-spacing: -0.02em;">Tilia AI Digest</h1>
+              <h1 style="font-family: 'Outfit', 'Inter', -apple-system, sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin: 5px 0 0 0; letter-spacing: -0.02em;">Weekly AI Digest</h1>
               <p style="font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #94a3b8; margin: 8px 0 0 0;">Ingested & Synthesized on {date_str}</p>
             </td>
           </tr>
@@ -113,10 +113,10 @@ def convert_markdown_to_html(markdown_content: str) -> str:
           <tr>
             <td style="background-color: #f1f5f9; padding: 25px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="font-family: 'Inter', 'Inter', -apple-system, sans-serif; font-size: 12px; color: #64748b; margin: 0;">
-                Tilia LLC AI Research & Strategic Investment Operations
+                Personal AI Research & Technology Digest
               </p>
               <p style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; color: #94a3b8; margin: 5px 0 0 0;">
-                This email was automatically ingested, analyzed by Gemini 1.5 Pro, and delivered serverless.
+                This email was automatically ingested, analyzed by Gemini, and delivered serverless.
               </p>
             </td>
           </tr>
@@ -142,9 +142,9 @@ def send_newsletter_email(html_body: str, recipient: str) -> bool:
     
     try:
         response = resend.Emails.send({
-            "from": "Tilia AI Digest <onboarding@resend.dev>",
+            "from": "AI Digest <onboarding@resend.dev>",
             "to": recipient,
-            "subject": f"[Tilia AI Digest] Weekly Ingestion & Strategic Synthesis - {date_str}",
+            "subject": f"[Weekly AI Digest] Weekly Ingestion & Synthesis - {date_str}",
             "html": html_body
         })
         print(f"Resend email sent successfully. ID: {getattr(response, 'id', 'N/A')}")

@@ -34,3 +34,4 @@ def test_synthesize_articles_empty():
     # Verify that an empty article list skips the LLM call and returns a graceful message
     result = synthesize_articles([])
     assert "No new corporate announcements or product updates" in result
+    assert "NVIDIA" in result

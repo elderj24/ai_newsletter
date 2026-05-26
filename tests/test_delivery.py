@@ -33,7 +33,7 @@ def test_send_newsletter_email_success(mock_send):
         
     assert result is True
     mock_send.assert_called_once_with({
-        "from": "Tilia AI Digest <onboarding@resend.dev>",
+        "from": "AI Digest <onboarding@resend.dev>",
         "to": "recipient@example.com",
         "subject": mock_send.call_args[0][0]["subject"],
         "html": "<p>Test Body</p>"

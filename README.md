@@ -10,13 +10,14 @@ The pipeline runs weekly to curate, summarize, and synthesize news from official
 * **xAI**
 * **Cursor**
 * **Cognition**
+* **NVIDIA**
 
-It provides a high-value, signal-rich email summary tailored for strategic, investment, and private equity analysis.
+It provides a high-value, signal-rich personal weekly email summary.
 
 ## Mental Model & Data Pipeline
 1. **Ingestion**: Weekly search and extraction of official blogs/announcements using Exa.ai's neural search engine.
 2. **State & Deduplication**: Storage of parsed article URLs in a lightweight local SQLite database to prevent redundant processing.
-3. **LLM Synthesis**: Synthesis of news via the Google Gemini API (using Gemini 1.5 Pro) to extract key themes, breakthroughs, and strategic implications.
+3. **LLM Synthesis**: Synthesis of news via the Google Gemini API (using Gemini 3.1 Flash-Lite) to extract key themes and breakthroughs.
 4. **Delivery**: Responsive, professionally formatted HTML email delivery using Resend.
 5. **Orchestration**: Automated weekly schedule powered by GitHub Actions.
 
@@ -64,5 +65,5 @@ python -m src.main
 
 ## Running Tests
 ```bash
-pytest
+python -m pytest
 ```

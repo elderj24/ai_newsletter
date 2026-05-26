@@ -5,7 +5,7 @@ from src.database import is_article_sent
 
 def fetch_weekly_updates(db_path: str = "newsletter_state.db", days_back: int = 7) -> list[dict]:
     """
-    Searches official announcement/blog domains for Google, OpenAI, Anthropic, xAI, Cursor, and Cognition
+    Searches official announcement/blog domains for Google, OpenAI, Anthropic, xAI, Cursor, Cognition, and NVIDIA
     using Exa.ai. Filters out any URLs already present in the SQLite database.
     """
     exa_api_key = os.environ.get("EXA_API_KEY")
@@ -28,7 +28,9 @@ def fetch_weekly_updates(db_path: str = "newsletter_state.db", days_back: int = 
         "cursor.com",
         "cursor.sh",
         "cognition.ai",
-        "cognition-labs.com"
+        "cognition-labs.com",
+        "nvidia.com",
+        "blogs.nvidia.com"
     ]
     
     # Query Exa using semantic search with contents configuration
@@ -75,6 +77,8 @@ def fetch_weekly_updates(db_path: str = "newsletter_state.db", days_back: int = 
             company = "Cursor"
         elif "cognition.ai" in lower_url or "cognition-labs.com" in lower_url:
             company = "Cognition"
+        elif "nvidia.com" in lower_url:
+            company = "NVIDIA"
             
         articles.append({
             "url": url,

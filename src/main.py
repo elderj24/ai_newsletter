@@ -8,7 +8,7 @@ from src.delivery import convert_markdown_to_html, send_newsletter_email
 
 def main():
     print("=========================================")
-    print("TILIA AI NEWSLETTER PIPELINE STARTING")
+    print("AI NEWSLETTER PIPELINE STARTING")
     print("=========================================")
     
     # Load environment variables from .env
@@ -65,7 +65,7 @@ def main():
         sys.exit(1)
         
     print("\n=========================================")
-    print("TILIA AI NEWSLETTER PIPELINE COMPLETE")
+    print("AI NEWSLETTER PIPELINE COMPLETE")
     print("=========================================")
 
 if __name__ == "__main__":
