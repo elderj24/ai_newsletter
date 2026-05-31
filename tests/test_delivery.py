@@ -27,37 +27,43 @@ def test_convert_markdown_to_html():
     assert '<li style="margin-bottom: 6px;">Bullet 2</li>' in html
     assert "</ul>" in html
 
-@patch("src.delivery.resend.Emails.send")
-def test_send_newsletter_email_success(mock_send):
-    mock_response = MagicMock()
-    mock_response.id = "test-email-id"
-    mock_send.return_value = mock_response
+@patch("src.delivery.smtplib.SMTP")
+def test_send_newsletter_email_success(mock_smtp_class):
+    mock_smtp_instance = MagicMock()
+    mock_smtp_class.return_value = mock_smtp_instance
     
-    with patch.dict("os.environ", {"RESEND_API_KEY": "test_resend_key"}):
+    with patch.dict("os.environ", {
+        "SMTP_SENDER": "sender@gmail.com",
+        "SMTP_PASSWORD": "test_password"
+    }):
         result = send_newsletter_email("<p>Test Body</p>", "recipient@example.com")
         
     assert result is True
-    mock_send.assert_called_once_with({
-        "from": "AI Digest <onboarding@resend.dev>",
-        "to": "recipient@example.com",
-        "subject": mock_send.call_args[0][0]["subject"],
-        "html": "<p>Test Body</p>"
-    })
+    # Verify SMTP calls
+    mock_smtp_class.assert_called_once_with("smtp.gmail.com", 587)
+    mock_smtp_instance.starttls.assert_called_once()
+    mock_smtp_instance.login.assert_called_once_with("sender@gmail.com", "test_password")
+    mock_smtp_instance.sendmail.assert_called_once()
+    mock_smtp_instance.quit.assert_called_once()
 
-@patch("src.delivery.resend.Emails.send")
-def test_send_newsletter_email_multiple_recipients(mock_send):
-    mock_response = MagicMock()
-    mock_response.id = "test-email-id"
-    mock_send.return_value = mock_response
+@patch("src.delivery.smtplib.SMTP")
+def test_send_newsletter_email_multiple_recipients(mock_smtp_class):
+    mock_smtp_instance = MagicMock()
+    mock_smtp_class.return_value = mock_smtp_instance
     
-    with patch.dict("os.environ", {"RESEND_API_KEY": "test_resend_key"}):
+    with patch.dict("os.environ", {
+        "SMTP_SENDER": "sender@gmail.com",
+        "SMTP_PASSWORD": "test_password"
+    }):
         result = send_newsletter_email("<p>Test Body</p>", "recipient1@example.com, recipient2@example.com")
         
     assert result is True
-    mock_send.assert_called_once_with({
-        "from": "AI Digest <onboarding@resend.dev>",
-        "to": ["recipient1@example.com", "recipient2@example.com"],
-        "subject": mock_send.call_args[0][0]["subject"],
-        "html": "<p>Test Body</p>"
-    })
+    mock_smtp_class.assert_called_once_with("smtp.gmail.com", 587)
+    mock_smtp_instance.sendmail.assert_called_once()
+    
+    # Asserting that both emails are in to_list passed to sendmail
+    call_args = mock_smtp_instance.sendmail.call_args[0]
+    assert call_args[0] == "sender@gmail.com"
+    assert call_args[1] == ["recipient1@example.com", "recipient2@example.com"]
+
 

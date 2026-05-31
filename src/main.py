@@ -19,7 +19,7 @@ def main():
     load_dotenv()
     
     # Configuration Validation
-    required_env = ["GEMINI_API_KEY", "EXA_API_KEY", "RESEND_API_KEY", "RECIPIENT_EMAIL"]
+    required_env = ["GEMINI_API_KEY", "EXA_API_KEY", "SMTP_SENDER", "SMTP_PASSWORD", "RECIPIENT_EMAIL"]
     missing = [var for var in required_env if not os.environ.get(var)]
     if missing:
         print(f"Error: Missing required environment variables: {', '.join(missing)}")
@@ -81,8 +81,8 @@ def main():
     print("\n[4/5] Compiling HTML template with responsive, high-end design...")
     newsletter_html = convert_markdown_to_html(newsletter_markdown)
     
-    # Step 5: Deliver Newsletter via Resend
-    print("\n[5/5] Delivering strategic newsletter email via Resend...")
+    # Step 5: Deliver Newsletter via SMTP
+    print("\n[5/5] Delivering strategic newsletter email via SMTP...")
     success = send_newsletter_email(newsletter_html, recipient)
     
     if success:

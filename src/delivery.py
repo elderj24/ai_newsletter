@@ -1,7 +1,9 @@
 import re
 import os
 import datetime
-import resend
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def convert_markdown_to_html(markdown_content: str) -> str:
     """
@@ -138,34 +140,53 @@ def convert_markdown_to_html(markdown_content: str) -> str:
 
 def send_newsletter_email(html_body: str, recipient: str) -> bool:
     """
-    Delivers the compiled HTML newsletter via Resend.
-    Supports a single email address, a comma-separated list of emails, or a list of strings.
+    Delivers the compiled HTML newsletter via Gmail SMTP.
+    Supports a single email address or a comma-separated list of emails.
     """
-    resend_api_key = os.environ.get("RESEND_API_KEY")
-    if not resend_api_key:
-        raise ValueError("RESEND_API_KEY environment variable is not set")
-        
-    resend.api_key = resend_api_key
+    smtp_sender = os.environ.get("SMTP_SENDER")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
     
-    # Parse recipient: split by commas if it is a string
+    if not smtp_sender or not smtp_password:
+        raise ValueError("SMTP_SENDER and SMTP_PASSWORD environment variables must be set")
+        
+    # Parse recipient: always convert to a list of strings for sending
     if isinstance(recipient, str):
-        to_field = [email.strip() for email in recipient.split(",") if email.strip()]
-        if len(to_field) == 1:
-            to_field = to_field[0]
+        to_list = [email.strip() for email in recipient.split(",") if email.strip()]
+    elif isinstance(recipient, list):
+        to_list = [str(email).strip() for email in recipient]
     else:
-        to_field = recipient
+        to_list = [str(recipient).strip()]
+        
+    if not to_list:
+        raise ValueError("No valid recipient email address provided")
         
     date_str = datetime.date.today().strftime("%B %d, %Y")
     
+    # Build MIME message
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"[Weekly AI Digest] Weekly Ingestion & Synthesis - {date_str}"
+    msg["From"] = f"AI Digest <{smtp_sender}>"
+    msg["To"] = ", ".join(to_list)
+    
+    # Attach HTML body
+    msg.attach(MIMEText(html_body, "html"))
+    
     try:
-        response = resend.Emails.send({
-            "from": "AI Digest <onboarding@resend.dev>",
-            "to": to_field,
-            "subject": f"[Weekly AI Digest] Weekly Ingestion & Synthesis - {date_str}",
-            "html": html_body
-        })
-        print(f"Resend email sent successfully. ID: {getattr(response, 'id', 'N/A')}")
+        # Connect to SMTP server (using TLS)
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.ehlo()
+        server.starttls()  # Upgrade connection to secure TLS
+        server.ehlo()
+        server.login(smtp_sender, smtp_password)
+        
+        # Send email
+        server.sendmail(smtp_sender, to_list, msg.as_string())
+        server.quit()
+        
+        print(f"SMTP email sent successfully via {smtp_server} to: {', '.join(to_list)}")
         return True
     except Exception as e:
-        print(f"Error during Resend email delivery: {e}")
+        print(f"Error during SMTP email delivery: {e}")
         raise e
