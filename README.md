@@ -3,23 +3,20 @@
 A Python-based weekly data pipeline that automatically aggregates, filters, synthesizes, and emails a structured digest of recent AI announcements from the industry's leading companies and tools.
 
 ## Objective
-The pipeline runs weekly to curate, summarize, and synthesize news from official press releases and product blogs of:
-* **Google / Gemini**
-* **Anthropic**
-* **OpenAI**
-* **xAI**
-* **Cursor**
-* **Cognition**
-* **NVIDIA**
+The pipeline runs weekly to curate, summarize, and synthesize three key sections:
+1. **AI & Tech Announcements**: Official releases, research, and product updates from OpenAI, Anthropic, Google/Gemini, xAI, Cursor, Cognition, and NVIDIA.
+2. **Global Politics & Geopolitics**: Crucial international relations, strategic global news, and policy changes.
+3. **Local News Briefing**: Hyper-local updates and community events for Illinois, Chicago, and Naperville.
 
 It provides a high-value, signal-rich personal weekly email summary.
 
 ## Mental Model & Data Pipeline
-1. **Ingestion**: Weekly search and extraction of official blogs/announcements using Exa.ai's neural search engine.
+1. **Ingestion**: Weekly search and extraction of tech announcements, geopolitical affairs, and local news using Exa.ai's neural search engine.
 2. **State & Deduplication**: Storage of parsed article URLs in a lightweight local SQLite database to prevent redundant processing.
-3. **LLM Synthesis**: Synthesis of news via the Google Gemini API (using Gemini 3.1 Flash-Lite) to extract key themes and breakthroughs.
+3. **LLM Synthesis**: Synthesis of news via the Google Gemini API (using Gemini 3.1 Flash-Lite) to extract key themes and breakthroughs across all categories.
 4. **Delivery**: Responsive, professionally formatted HTML email delivery using Resend.
 5. **Orchestration**: Automated weekly schedule powered by GitHub Actions.
+
 
 ## Tech Stack
 * **Language**: Python 3.11+

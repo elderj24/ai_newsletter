@@ -5,7 +5,7 @@ This document tracks project state, conventions, architectural decisions, and ta
 ## Project Metadata
 * **Owner**: JD Elder (Personal Use)
 * **Goal**: Automatic ingestion, LLM synthesis, and email delivery of weekly AI news from specific providers.
-* **Status**: Fully Operational & Live-Verified. Personal branding ("Weekly AI Digest") applied, "Strategic & Investment Takeaways" section removed, NVIDIA tracking added, and upgraded to Gemini 3.1 Flash-Lite. All modules written, unit tests passing (8/8), and live pipeline successfully run locally. Ready for GitHub Actions production scheduler.
+* **Status**: Fully Operational & Live-Verified. Personal branding ("Weekly AI Digest") applied, "Strategic & Investment Takeaways" section removed, NVIDIA tracking added, upgraded to Gemini 3.1 Flash-Lite, and **expanded to include Geopolitics & Local News (Illinois/Chicago/Naperville) using Exa.ai**. All modules written, 10/10 unit tests passing, and live pipeline successfully run locally. Ready for GitHub Actions production scheduler.
 
 ---
 
@@ -16,6 +16,8 @@ This document tracks project state, conventions, architectural decisions, and ta
 4. **State Storage (SQLite)**: A small, single-table SQLite database will track previously sent URLs (`url`, `title`, `published_date`, `sent_at`) to ensure we do not email duplicate articles week-over-week.
 5. **Delivery via Resend**: Resend provides a clean developer API and modern Python client. It renders HTML emails beautifully and provides a robust free tier.
 6. **Orchestration**: A weekly GitHub Actions cron job will run the pipeline, keeping the architecture entirely serverless and free to host.
+7. **Geopolitics & Local News Expansion**: Leverages Exa's neural search capabilities for global geopolitics and local Illinois, Chicago, and Naperville news, bypassing standard web scraper blocks and paywalls by returning clean article body markdown directly in the API response.
+
 
 ---
 

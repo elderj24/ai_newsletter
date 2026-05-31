@@ -24,7 +24,7 @@ def test_synthesize_articles_success(mock_client_class):
     ]
     
     with patch.dict("os.environ", {"GEMINI_API_KEY": "test_gemini_key"}):
-        result = synthesize_articles(test_articles)
+        result = synthesize_articles(tech_articles=test_articles, politics_articles=[], local_articles=[])
         
     assert result == "# Strategic Newsletter Output"
     mock_client_class.assert_called_once_with(api_key="test_gemini_key")
@@ -32,6 +32,7 @@ def test_synthesize_articles_success(mock_client_class):
 
 def test_synthesize_articles_empty():
     # Verify that an empty article list skips the LLM call and returns a graceful message
-    result = synthesize_articles([])
-    assert "No new corporate announcements or product updates" in result
-    assert "NVIDIA" in result
+    result = synthesize_articles(tech_articles=[], politics_articles=[], local_articles=[])
+    assert "No new articles or updates" in result
+    assert "Illinois" in result
+

@@ -89,3 +89,115 @@ def fetch_weekly_updates(db_path: str = "newsletter_state.db", days_back: int = 
         })
         
     return articles
+
+def fetch_geopolitics_news(db_path: str = "newsletter_state.db", days_back: int = 7) -> list[dict]:
+    """
+    Searches for major political and geopolitical news using Exa.ai.
+    Filters out any URLs already present in the SQLite database.
+    """
+    exa_api_key = os.environ.get("EXA_API_KEY")
+    if not exa_api_key:
+        raise ValueError("EXA_API_KEY environment variable is not set")
+        
+    exa = Exa(api_key=exa_api_key)
+    
+    # Calculate start date scoped to UTC timezone
+    start_date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days_back)
+    start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    
+    try:
+        response = exa.search(
+            query="major international relations, geopolitics, global political news, and national policy developments",
+            start_published_date=start_date_str,
+            num_results=10,
+            contents={
+                "text": {
+                    "include_html_tags": False
+                }
+            }
+        )
+    except Exception as e:
+        print(f"Error during Exa geopolitics search: {e}")
+        return []
+        
+    articles = []
+    for result in getattr(response, "results", []):
+        url = result.url
+        title = result.title
+        published_date = getattr(result, "published_date", "") or ""
+        text = getattr(result, "text", "") or ""
+        
+        if is_article_sent(db_path, url):
+            continue
+            
+        articles.append({
+            "url": url,
+            "title": title,
+            "published_date": published_date,
+            "markdown": text,
+            "source": "Geopolitics"
+        })
+        
+    return articles
+
+def fetch_local_news(db_path: str = "newsletter_state.db", days_back: int = 7) -> list[dict]:
+    """
+    Searches for major local news in Illinois, Chicago, and Naperville using Exa.ai.
+    Filters out any URLs already present in the SQLite database.
+    """
+    exa_api_key = os.environ.get("EXA_API_KEY")
+    if not exa_api_key:
+        raise ValueError("EXA_API_KEY environment variable is not set")
+        
+    exa = Exa(api_key=exa_api_key)
+    
+    # Calculate start date scoped to UTC timezone
+    start_date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days_back)
+    start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    
+    try:
+        response = exa.search(
+            query="major local news, community updates, city council decisions, and developments in Chicago, Naperville, and Illinois",
+            start_published_date=start_date_str,
+            num_results=10,
+            contents={
+                "text": {
+                    "include_html_tags": False
+                }
+            }
+        )
+    except Exception as e:
+        print(f"Error during Exa local news search: {e}")
+        return []
+        
+    articles = []
+    for result in getattr(response, "results", []):
+        url = result.url
+        title = result.title
+        published_date = getattr(result, "published_date", "") or ""
+        text = getattr(result, "text", "") or ""
+        
+        if is_article_sent(db_path, url):
+            continue
+            
+        # Determine specific location tag
+        lower_title = title.lower()
+        lower_url = url.lower()
+        lower_text = text.lower()
+        
+        location = "Illinois"
+        if "naperville" in lower_title or "naperville" in lower_url or "naperville" in lower_text[:1000]:
+            location = "Naperville"
+        elif "chicago" in lower_title or "chicago" in lower_url or "chicago" in lower_text[:1000]:
+            location = "Chicago"
+            
+        articles.append({
+            "url": url,
+            "title": title,
+            "published_date": published_date,
+            "markdown": text,
+            "location": location
+        })
+        
+    return articles
+

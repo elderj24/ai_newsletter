@@ -56,6 +56,14 @@ def convert_markdown_to_html(markdown_content: str) -> str:
             output_lines.append(
                 f'<h3 style="font-family: \'Outfit\', \'Inter\', -apple-system, sans-serif; color: #3b82f6; font-size: 16px; margin-top: 18px; margin-bottom: 8px;">{title}</h3>'
             )
+        elif stripped.startswith("#### "):
+            if in_list:
+                output_lines.append("</ul>")
+                in_list = False
+            title = stripped[5:]
+            output_lines.append(
+                f'<h4 style="font-family: \'Outfit\', \'Inter\', -apple-system, sans-serif; color: #475569; font-size: 14px; font-weight: 600; margin-top: 14px; margin-bottom: 6px;">{title}</h4>'
+            )
             
         # Lists
         elif stripped.startswith("* ") or stripped.startswith("- "):
@@ -131,6 +139,7 @@ def convert_markdown_to_html(markdown_content: str) -> str:
 def send_newsletter_email(html_body: str, recipient: str) -> bool:
     """
     Delivers the compiled HTML newsletter via Resend.
+    Supports a single email address, a comma-separated list of emails, or a list of strings.
     """
     resend_api_key = os.environ.get("RESEND_API_KEY")
     if not resend_api_key:
@@ -138,12 +147,20 @@ def send_newsletter_email(html_body: str, recipient: str) -> bool:
         
     resend.api_key = resend_api_key
     
+    # Parse recipient: split by commas if it is a string
+    if isinstance(recipient, str):
+        to_field = [email.strip() for email in recipient.split(",") if email.strip()]
+        if len(to_field) == 1:
+            to_field = to_field[0]
+    else:
+        to_field = recipient
+        
     date_str = datetime.date.today().strftime("%B %d, %Y")
     
     try:
         response = resend.Emails.send({
             "from": "AI Digest <onboarding@resend.dev>",
-            "to": recipient,
+            "to": to_field,
             "subject": f"[Weekly AI Digest] Weekly Ingestion & Synthesis - {date_str}",
             "html": html_body
         })

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from src.ingestion import fetch_weekly_updates
+from src.ingestion import fetch_weekly_updates, fetch_geopolitics_news, fetch_local_news
+
 
 @patch("src.ingestion.Exa")
 @patch("src.ingestion.is_article_sent")
@@ -53,3 +54,71 @@ def test_fetch_weekly_updates(mock_is_article_sent, mock_exa_class):
     # Verify Exa client was initialized and searched correctly
     mock_exa_class.assert_called_once_with(api_key="test_key")
     mock_exa_instance.search.assert_called_once()
+
+@patch("src.ingestion.Exa")
+@patch("src.ingestion.is_article_sent")
+def test_fetch_geopolitics_news(mock_is_article_sent, mock_exa_class):
+    mock_exa_instance = MagicMock()
+    mock_exa_class.return_value = mock_exa_instance
+    
+    mock_result = MagicMock()
+    mock_result.url = "https://reuters.com/world/some-geopolitics"
+    mock_result.title = "Global Trade Deal Signed"
+    mock_result.published_date = "2026-05-20T10:00:00Z"
+    mock_result.text = "A new trade agreement has been signed by major global powers."
+    
+    mock_response = MagicMock()
+    mock_response.results = [mock_result]
+    mock_exa_instance.search.return_value = mock_response
+    
+    mock_is_article_sent.return_value = False
+    
+    with patch.dict("os.environ", {"EXA_API_KEY": "test_key"}):
+        results = fetch_geopolitics_news(db_path="mock.db", days_back=7)
+        
+    assert len(results) == 1
+    assert results[0]["url"] == "https://reuters.com/world/some-geopolitics"
+    assert results[0]["title"] == "Global Trade Deal Signed"
+    assert results[0]["source"] == "Geopolitics"
+    assert results[0]["markdown"] == "A new trade agreement has been signed by major global powers."
+
+@patch("src.ingestion.Exa")
+@patch("src.ingestion.is_article_sent")
+def test_fetch_local_news(mock_is_article_sent, mock_exa_class):
+    mock_exa_instance = MagicMock()
+    mock_exa_class.return_value = mock_exa_instance
+    
+    mock_result_chicago = MagicMock()
+    mock_result_chicago.url = "https://chicagotribune.com/news/1"
+    mock_result_chicago.title = "Chicago City Council Votes on Budget"
+    mock_result_chicago.published_date = "2026-05-20T10:00:00Z"
+    mock_result_chicago.text = "The Chicago city council passed a new fiscal plan."
+    
+    mock_result_naperville = MagicMock()
+    mock_result_naperville.url = "https://dailyherald.com/naperville/2"
+    mock_result_naperville.title = "Naperville Library Event"
+    mock_result_naperville.published_date = "2026-05-21T12:00:00Z"
+    mock_result_naperville.text = "The local library in Naperville hosts a tech workshop."
+
+    mock_result_illinois = MagicMock()
+    mock_result_illinois.url = "https://illinois.gov/news/3"
+    mock_result_illinois.title = "Illinois State Park Upgrades"
+    mock_result_illinois.published_date = "2026-05-22T08:00:00Z"
+    mock_result_illinois.text = "The state of Illinois announced major park renovations."
+    
+    mock_response = MagicMock()
+    mock_response.results = [mock_result_chicago, mock_result_naperville, mock_result_illinois]
+    mock_exa_instance.search.return_value = mock_response
+    
+    mock_is_article_sent.return_value = False
+    
+    with patch.dict("os.environ", {"EXA_API_KEY": "test_key"}):
+        results = fetch_local_news(db_path="mock.db", days_back=7)
+        
+    assert len(results) == 3
+    
+    # Assert locations are parsed correctly
+    assert results[0]["location"] == "Chicago"
+    assert results[1]["location"] == "Naperville"
+    assert results[2]["location"] == "Illinois"
+
